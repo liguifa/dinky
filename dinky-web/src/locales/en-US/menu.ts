@@ -100,6 +100,7 @@ export default {
   'menu.datastudio.previewConfig': 'PreView Config',
   'menu.datastudio.savePoint': 'Save Point',
   'menu.datastudio.historyVision': 'History Vision',
+  'menu.datastudio.gitLog': 'Git Repository',
   'menu.datastudio.jobInfo': 'Job Info',
   'menu.datastudio.quickStart': 'Quick Start',
   'menu.datastudio.flinkSqlClient': 'Flink SQL Client',
