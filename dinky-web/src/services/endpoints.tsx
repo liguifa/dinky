@@ -295,6 +295,7 @@ export enum API_CONSTANTS {
   CATALOGUE_GET_CATALOGUE_TREE_DATA = '/api/catalogue/getCatalogueTreeData',
   CATALOGUE_GET_CATALOGUE_SORT_TYPE_DATA = '/api/catalogue/getCatalogueSortType',
   GET_JOB_VERSION = '/api/task/version',
+  GET_JOB_GITLOG = '/api/git/repository/commits',
   RESTART_TASK = '/api/task/restartTask',
   ROLLBACK_TASK = '/api/task/rollbackTask',
   SAVEPOINT = '/api/task/savepoint',
@@ -302,6 +303,8 @@ export enum API_CONSTANTS {
   LIST_FLINK_SQL_ENV = '/api/task/listFlinkSQLEnv',
   FLINK_JAR_SQL_CONVERT_FORM = '/api/task/flinkJarSqlConvertForm',
   FLINK_JAR_FORM_CONVERT_SQL = '/api/task/flinkJarFormConvertSql',
+  TASK_HASUNCOMMITTED = '/api/git/repository/hasUncommitted',
+  TASK_COMMIT = '/api/git/repository/commit',
 
   // ------------------------------------ task record ------------------------------------
   HISTORY_LIST = '/api/history/list',

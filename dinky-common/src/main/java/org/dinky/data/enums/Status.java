@@ -367,6 +367,13 @@ public enum Status {
     SYS_ENV_SETTINGS_IS_OWNER_REFERENCE(122, "sys.env.settings.isOwnerReference"),
     SYS_ENV_SETTINGS_IS_OWNER_REFERENCE_NOTE(123, "sys.env.settings.isOwnerReference.note"),
 
+    SYS_ENV_SETTINGS_GIT_REPOSITORY(124, "sys.env.settings.gitRepository"),
+    SYS_ENV_SETTINGS_GIT_REPOSITORY_NOTE(125, "sys.env.settings.gitRepository.note"),
+    SYS_ENV_SETTINGS_GIT_REPOSITORY_BRANCH(126, "sys.env.settings.gitRepository.branch"),
+    SYS_ENV_SETTINGS_GIT_REPOSITORY_BRANCH_NOTE(127, "sys.env.settings.gitRepository.branch.note"),
+    SYS_ENV_SETTINGS_GIT_REPOSITORY_KEY(128, "sys.env.settings.gitRepository.key"),
+    SYS_ENV_SETTINGS_GIT_REPOSITORY_KEY_NOTE(129, "sys.env.settings.gitRepository.key.note"),
+
     SYS_ENV_SETTINGS_MAX_RETAIN_DAYS(1171, "sys.env.settings.maxRetainDays"),
     SYS_ENV_SETTINGS_MAX_RETAIN_DAYS_NOTE(1172, "sys.env.settings.maxRetainDays.note"),
     SYS_ENV_SETTINGS_MAX_RETAIN_COUNT(1173, "sys.env.settings.maxRetainCount"),

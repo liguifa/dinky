@@ -474,6 +474,8 @@ export default {
     'The current job [{job name}] fails to connect to the cluster to obtain information and cannot be stopped. Change the status forced?',
   'pages.datastudio.editor.submitting': 'The new task [{jobName}] is executing',
   'pages.datastudio.editor.checking': 'The task [{jobName}] is checking',
+  'pages.datastudio.editor.commit.title': 'Changes detected. Enter a commit message',
+  'pages.datastudio.editor.commit.button': 'Submit',
   'pages.datastudio.editor.debugging': 'The new task [{jobName}] is debugging',
   'pages.datastudio.editor.onlyread':
     'Task has been published, modification is prohibited, please go offline first',

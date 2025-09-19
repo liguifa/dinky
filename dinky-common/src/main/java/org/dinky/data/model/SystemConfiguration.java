@@ -345,6 +345,18 @@ public class SystemConfiguration {
             .booleanType()
             .defaultValue(true)
             .note(Status.SYS_ENV_SETTINGS_IS_OWNER_REFERENCE_NOTE);
+    private final Configuration<String> gitRepository = key(Status.SYS_ENV_SETTINGS_GIT_REPOSITORY)
+            .stringType()
+            .defaultValue("")
+            .note(Status.SYS_ENV_SETTINGS_GIT_REPOSITORY_NOTE);
+    private final Configuration<String> gitBranch = key(Status.SYS_ENV_SETTINGS_GIT_REPOSITORY_BRANCH)
+            .stringType()
+            .defaultValue("")
+            .note(Status.SYS_ENV_SETTINGS_GIT_REPOSITORY_BRANCH_NOTE);
+    private final Configuration<String> gitKey = key(Status.SYS_ENV_SETTINGS_GIT_REPOSITORY_KEY)
+            .stringType()
+            .defaultValue("")
+            .note(Status.SYS_ENV_SETTINGS_GIT_REPOSITORY_KEY_NOTE);
 
     /**
      * Initialize after spring bean startup
@@ -490,5 +502,17 @@ public class SystemConfiguration {
 
     public Boolean isOwnerReference() {
         return isOwnerReference.getValue();
+    }
+
+    public String getGitRepository() {
+        return gitRepository.getValue();
+    }
+
+    public String getGitRepositoryBranch() {
+        return gitBranch.getValue();
+    }
+
+    public String getGitRepositoryKey() {
+        return gitKey.getValue().replace("\\n", "\n");
     }
 }

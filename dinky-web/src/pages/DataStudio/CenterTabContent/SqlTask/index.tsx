@@ -60,6 +60,7 @@ import { SelectFlinkRunMode } from '@/pages/DataStudio/CenterTabContent/RunToolb
 import { mapDispatchToProps } from '@/pages/DataStudio/DvaFunction';
 import { TaskInfo } from '@/pages/DataStudio/CenterTabContent/SqlTask/TaskInfo';
 import { HistoryVersion } from '@/pages/DataStudio/CenterTabContent/SqlTask/HistoryVersion';
+import { GitLog } from '@/pages/DataStudio/CenterTabContent/SqlTask/GitLog';
 import {
   FlinkTaskRunType,
   SqlConvertForm,
@@ -114,6 +115,8 @@ import PushDolphin from '@/pages/DataStudio/CenterTabContent/SqlTask/PushDolphin
 import ApprovalModal from '@/pages/AuthCenter/Approval/components/ApprovalModal';
 import { OperationType } from '@/types/AuthCenter/data.d';
 import { getAllConfig } from '@/pages/Metrics/service';
+import { Modal } from 'antd/lib';
+import TextArea from 'antd/es/input/TextArea';
 
 export type FlinkSqlProps = {
   showDesc: boolean;
@@ -481,6 +484,11 @@ export const SqlTask = memo((props: FlinkSqlProps & any) => {
       )
     });
     rightToolbarItem.push({
+      label: l('menu.datastudio.gitLog'),
+      key: 'gitLog',
+      children: <GitLog taskId={currentState.taskId} />
+    });
+    rightToolbarItem.push({
       label: l('menu.datastudio.savePoint'),
       key: 'savePoint',
       children: <SavePoint taskId={currentState.taskId} />
@@ -499,8 +507,38 @@ export const SqlTask = memo((props: FlinkSqlProps & any) => {
         ? (await flinkJarFormConvertSql(sqlForm))!!
         : currentState.statement;
     await handlePutDataJson(API_CONSTANTS.TASK, { ...currentState, statement });
+    await handleCommit();
     updateCenterTab({ ...props.tabData, isUpdate: false });
   }, [currentState, updateCenterTab, props.tabData, sqlForm]);
+
+  const handleCommit = useCallback(async () => {
+    const needCommit = await queryDataByParams(`${API_CONSTANTS.TASK_HASUNCOMMITTED}/${currentState.taskId}`);
+    if(needCommit) {
+      let commitMsg = "";
+      const modal = Modal.confirm({
+        title: l('pages.datastudio.editor.commit.title'),
+        okText: l('pages.datastudio.editor.commit.button'),
+        cancelButtonProps: { style: { display: 'none' } },
+        maskClosable: false,
+        closable: false,
+        icon: "",
+        okButtonProps: { disabled: true },
+        content: (
+          <TextArea placeholder={l('pages.datastudio.editor.commit.title')} onChange={(e) => {
+              commitMsg = e.target.value;
+              modal.update({
+                okButtonProps: { disabled: !commitMsg.trim() } 
+              });
+          }} />
+        ),
+        onOk: async () => {
+          await getDataByParams(`${API_CONSTANTS.TASK_COMMIT}/${currentState.taskId}`, {
+            "message": commitMsg
+          })
+        }
+      });
+    }
+  }, [currentState]);
 
   const handleCheck = useCallback(async () => {
     const statement =

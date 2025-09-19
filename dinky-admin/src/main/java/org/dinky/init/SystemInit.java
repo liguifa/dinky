@@ -116,7 +116,7 @@ public class SystemInit implements ApplicationRunner {
             discoverUDF();
             updateGitBuildState();
             registerURL();
-            initSandboxSocketServer();
+            // initSandboxSocketServer();
         } catch (NoClassDefFoundError e) {
             if (e.getMessage().contains("org/apache/flink")) {
                 log.error(

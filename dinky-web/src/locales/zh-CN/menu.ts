@@ -100,6 +100,7 @@ export default {
   'menu.datastudio.previewConfig': '预览配置',
   'menu.datastudio.savePoint': '保存点',
   'menu.datastudio.historyVision': '历史版本',
+  'menu.datastudio.gitLog': 'Git仓库',
   'menu.datastudio.jobInfo': '作业信息',
   'menu.datastudio.tool': '工具',
   'menu.datastudio.result': '结果',
