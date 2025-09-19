@@ -40,6 +40,8 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.eclipse.jgit.api.Git;
@@ -253,13 +255,14 @@ public class GitRepositoryServiceImpl implements GitRepositoryService {
         if (!isGitSyncEnabled(taskId)) {
             return false;
         }
-        if (!writeTaskContentToLocalRepository(taskId)) {
-            log.warn("任务 [{}] 写入本地仓库失败，跳过提交。", taskId);
-            return false;
-        }
-
+        
         try (Git git = getOrInitLocalRepository(taskId)) {
             String taskPath = String.format("tasks/%d", taskId);
+
+            if (!writeTaskContentToLocalRepository(taskId)) {
+                log.warn("任务 [{}] 写入本地仓库失败，跳过提交。", taskId);
+                return false;
+            }
 
             // 获取仓库状态
             Status status = git.status().addPath(taskPath).call();
@@ -285,6 +288,15 @@ public class GitRepositoryServiceImpl implements GitRepositoryService {
         try {
             TaskDTO task = taskService.getTaskInfoById(taskId);
             String sql = task.getStatement();
+            if (Pattern.compile("EXECUTE\\s+JAR\\s+WITH.*").matcher(sql).find()) {
+                Pattern pattern = Pattern.compile("'args'='base64@([A-Za-z0-9+/=]+)'");
+                Matcher matcher = pattern.matcher(sql);
+                if (matcher.find()) {
+                    String base64Encoded = matcher.group(1);
+                    String decoded = new String(Base64.getDecoder().decode(base64Encoded), StandardCharsets.UTF_8);
+                    sql = matcher.replaceFirst("'args'='" + decoded + "'");
+                }
+            }
             List<ConfigItem> configs = task.getConfigJson().getCustomConfig();
             String confs = configs.stream()
                     .map(conf -> String.format("%s=%s", conf.getKey(), conf.getValue()))
