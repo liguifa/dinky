@@ -23,8 +23,8 @@ import { TaskOwnerLockingStrategy } from '@/types/SettingCenter/data.d';
 import { Catalogue } from '@/types/Studio/data.d';
 import { searchTreeNode } from '@/utils/function';
 import { l } from '@/utils/intl';
-import { FireTwoTone, LockTwoTone, UnlockTwoTone } from '@ant-design/icons';
-import { Badge, Divider, Space, Tooltip } from 'antd';
+import { CheckCircleOutlined, ExclamationCircleOutlined, FireOutlined, FireTwoTone, LockTwoTone, UnlockTwoTone } from '@ant-design/icons';
+import { Badge, Divider, Space, Tag, Tooltip } from 'antd';
 import { Key } from 'react';
 import { getTabIcon, lockTask, showAllOwners } from '@/pages/DataStudio/function';
 import { assert } from '@/pages/DataStudio/utils';
@@ -254,11 +254,18 @@ export const buildProjectTree = (
         const mouseEnterDelay = 1.25;
 
         // 渲染后缀图标
+        const levelTagMap: Record<number, { color: string; text: string; }> = {
+          1: { color: "error", text: "P1" },
+          2: { color: "warning", text: "P2" },
+          3: { color: "success", text: "P3" }
+        };
+        const levelTag = item.task ? levelTagMap[item.task?.level] : null;
         const renderSuffixIcon = (
           <>
             {currentRunningTaskIds.includes(item.taskId) ? (
               <FireTwoTone twoToneColor='#ff0000' />
             ) : undefined}
+            {levelTag ? <Tag color={levelTag.color}>{levelTag.text}</Tag> : null}
             {lockTask(
               item?.task?.firstLevelOwner,
               item?.task?.secondLevelOwners,
@@ -293,6 +300,7 @@ export const buildProjectTree = (
           value: item.id,
           path: currentPath,
           type: item.type,
+          level: item.level,
           title: (
             <>
               {item.isLeaf && showBadge(item.type) && <>{'\u00A0'.repeat(2)}</>}

@@ -189,6 +189,10 @@ public class Task extends SuperEntity<Task> {
     @TableField(typeHandler = ListTypeHandler.class)
     private List<Integer> secondLevelOwners;
 
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    @ApiModelProperty(value = "Level", dataType = "Integer", example = "1001", notes = "Important level")
+    private Integer level;
+
     public Task(Integer id, Integer jobInstanceId) {
         this.jobInstanceId = jobInstanceId;
         this.setId(id);

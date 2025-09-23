@@ -295,7 +295,8 @@ export const useRightContext = (props: RightContextProps) => {
               ...params,
               name: values.name,
               firstLevelOwner: values.firstLevelOwner,
-              secondLevelOwners: values.secondLevelOwners
+              secondLevelOwners: values.secondLevelOwners,
+              level: values.level
             };
             updateCenterTab({ ...tab, params: taskParams, title: values.name });
           }

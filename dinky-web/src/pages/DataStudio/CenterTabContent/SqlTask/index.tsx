@@ -18,7 +18,7 @@
  */
 
 import { CenterTab, DataStudioState } from '@/pages/DataStudio/model';
-import { Button, Col, Divider, Flex, Row, Skeleton, TabsProps } from 'antd';
+import { Button, Col, Divider, Flex, Row, Skeleton, TabsProps, Tag } from 'antd';
 import '../index.less';
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { registerEditorKeyBindingAndAction } from '@/utils/function';
@@ -29,10 +29,13 @@ import {
   AuditOutlined,
   BugOutlined,
   CaretRightOutlined,
+  CheckCircleOutlined,
   ClearOutlined,
   CloseOutlined,
   CloudDownloadOutlined,
   EnvironmentOutlined,
+  ExclamationCircleOutlined,
+  FireOutlined,
   FullscreenExitOutlined,
   FullscreenOutlined,
   PartitionOutlined,
@@ -117,6 +120,7 @@ import { OperationType } from '@/types/AuthCenter/data.d';
 import { getAllConfig } from '@/pages/Metrics/service';
 import { Modal } from 'antd/lib';
 import TextArea from 'antd/es/input/TextArea';
+import { Alert } from 'antd/lib';
 
 export type FlinkSqlProps = {
   showDesc: boolean;
@@ -186,7 +190,8 @@ export const SqlTask = memo((props: FlinkSqlProps & any) => {
     createTime: new Date(),
     updateTime: new Date(),
     status: '',
-    mockSinkFunction: true
+    mockSinkFunction: true,
+    level: 3
   });
   // 代码恢复
   const [openDiffModal, setOpenDiffModal] = useState(false);
@@ -855,6 +860,13 @@ export const SqlTask = memo((props: FlinkSqlProps & any) => {
   const handleApprovalModalOpenChange = (open: boolean) => {
     setApprovalState((prevState) => ({ ...prevState, openSubmitModal: open }));
   };
+
+  const levelTagMap: Record<number, { color: string; text: string; icon: React.ReactNode }> = {
+    1: { color: "#ff4d4f", text: "P1", icon: <FireOutlined /> },
+    2: { color: "#faad14", text: "P2", icon: <ExclamationCircleOutlined /> },
+    3: { color: "#52c41a", text: "P3", icon: <CheckCircleOutlined /> }
+  };
+  const levelTag = levelTagMap[currentState.level];
   return (
     <Skeleton
       loading={loading}
@@ -1135,6 +1147,7 @@ export const SqlTask = memo((props: FlinkSqlProps & any) => {
               icon={<AuditOutlined />}
               onClick={handleOpenApprovalModal}
             />
+            {levelTag ? <Tag icon={levelTag.icon} color={levelTag.color} style={{marginLeft:'auto'}}>{levelTag.text}</Tag> : null}
           </Flex>
         </ProForm>
         <Flex flex={1} style={{ height: 0 }}>
@@ -1142,6 +1155,7 @@ export const SqlTask = memo((props: FlinkSqlProps & any) => {
             <Col style={{ width: codeEditorWidth - toolbarSize, height: '100%' }}>
               <PanelGroup direction={'horizontal'}>
                 <Panel>
+                  {currentState.level == 1 ? <Alert message="P1 — 高优先级任务，请谨慎操作" type="warning" showIcon /> : null}
                   <CodeEdit
                     monacoRef={editorInstance}
                     code={originStatementValue}

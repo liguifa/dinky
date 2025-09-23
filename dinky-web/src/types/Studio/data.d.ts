@@ -36,6 +36,7 @@ export type Catalogue = {
   task: TaskInfo;
   firstLevelOwner: number;
   secondLevelOwners: number[];
+  level: number;
 };
 
 export type TaskUdfConfig = {
@@ -97,6 +98,7 @@ export type TaskInfo = {
   updateTime: Date;
   firstLevelOwner: number;
   secondLevelOwners: number[];
+  level: number;
 };
 
 export type SavePoint = {
