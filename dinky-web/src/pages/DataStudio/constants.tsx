@@ -148,3 +148,18 @@ export const SAVE_POINT_TYPE: DefaultOptionType[] = [
     value: 3
   }
 ];
+
+export const JOB_LEVEL: DefaultOptionType[] = [
+  {
+    label: 'P1 - 高优先级',
+    value: 1
+  },
+  {
+    label: 'P2 - 中优先级',
+    value: 2
+  },
+  {
+    label: 'P3 - 低优先级',
+    value: 3
+  }
+];

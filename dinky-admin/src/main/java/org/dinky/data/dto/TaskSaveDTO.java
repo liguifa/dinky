@@ -170,4 +170,7 @@ public class TaskSaveDTO {
         BeanUtil.copyProperties(this, task);
         return task;
     }
+
+    @ApiModelProperty(value = "Level", dataType = "String", notes = "Important level")
+    private String level;
 }

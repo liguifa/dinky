@@ -37,7 +37,7 @@ import { useModel } from '@umijs/max';
 import { Form } from 'antd';
 import { DefaultOptionType } from 'antd/es/select';
 import React, { useEffect } from 'react';
-import { JOB_TYPE } from '@/pages/DataStudio/constants';
+import { JOB_TYPE, JOB_LEVEL } from '@/pages/DataStudio/constants';
 import TemplateSelect from '@/pages/DataStudio/Toolbar/Project/JobModal/components/TemplateSelect';
 import { isFlinkJob, isUDF } from '@/pages/DataStudio/Toolbar/Project/function';
 
@@ -75,7 +75,8 @@ const JobModal: React.FC<JobModalProps> = (props) => {
       ...values,
       configJson: values.task?.configJson,
       firstLevelOwner: values.task?.firstLevelOwner,
-      secondLevelOwners: values.task?.secondLevelOwners
+      secondLevelOwners: values.task?.secondLevelOwners,
+      level: values.task?.level
     };
     if (!modalVisible) {
       form.resetFields();
@@ -145,7 +146,8 @@ const JobModal: React.FC<JobModalProps> = (props) => {
         dialect: formData.type,
         statement: sqlTemplate,
         firstLevelOwner: formData.firstLevelOwner,
-        secondLevelOwners: formData.secondLevelOwners
+        secondLevelOwners: formData.secondLevelOwners,
+        level: formData.level
       };
       onSubmit({ ...values, ...formData, task: initTaskValue } as Catalogue);
     } else {
@@ -155,7 +157,8 @@ const JobModal: React.FC<JobModalProps> = (props) => {
         task: {
           statement: sqlTemplate,
           firstLevelOwner: formData.firstLevelOwner,
-          secondLevelOwners: formData.secondLevelOwners
+          secondLevelOwners: formData.secondLevelOwners,
+          level: formData.level
         }
       } as Catalogue);
     }
@@ -280,6 +283,17 @@ const JobModal: React.FC<JobModalProps> = (props) => {
             />
           </ProFormGroup>
         )}
+        <ProFormSelect
+          name={'level'}
+          label={l('catalog.level')}
+          tooltip={l('catalog.level.tip')}
+          options={JOB_LEVEL}
+          rules={[{ required: true }]}
+          allowClear={false}
+          initialValue={3}
+          width={'lg'}
+        />
+
         <ProFormTextArea
           name='note'
           label={l('catalog.note')}

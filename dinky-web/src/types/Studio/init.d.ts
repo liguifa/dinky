@@ -35,7 +35,9 @@ export const InitProjectState: ProjectState = {
   isRename: false,
   isCreateTask: false,
   isCut: false,
-  value: {}
+  value: {
+    level: 3
+  }
 };
 
 export const InitPushDolphinParams: PushDolphinParams = {

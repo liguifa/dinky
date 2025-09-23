@@ -102,6 +102,9 @@ public class CatalogueTaskDTO {
     @TableField(typeHandler = ListTypeHandler.class)
     private List<Integer> secondLevelOwners;
 
+    @ApiModelProperty(value = "Level", dataType = "Integer", example = "1001", notes = "Important level")
+    private Integer level;
+
     @ApiModelProperty(value = "Task", dataType = "TaskDTO", notes = "The task information")
     private TaskDTO task;
 }
