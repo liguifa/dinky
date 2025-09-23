@@ -168,7 +168,7 @@ public class SystemInit implements ApplicationRunner {
         schedule.addSchedule(clearJobHistoryTask, new PeriodicTrigger(1, TimeUnit.HOURS));
 
         DaemonTask recheckJobTask = DaemonTask.build(new DaemonTaskConfig(RecheckJobTask.TYPE));
-        schedule.addSchedule(recheckJobTask, new PeriodicTrigger(5, TimeUnit.MINUTES));
+        schedule.addSchedule(recheckJobTask, new PeriodicTrigger(1, TimeUnit.MINUTES));
 
         // Add flink running job task to flink job thread pool
         List<JobInstance> jobInstances = jobInstanceService.listJobInstanceActive();

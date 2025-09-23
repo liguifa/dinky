@@ -32,4 +32,6 @@ public class MetricKeys {
     public static final String DINKY_FLINK_TASK_VERTICE_ID = "task_vertice_id";
 
     public static final String DINKY_FLINK_TASK_DEPLOY_STATUS = "task_deploy_status";
+
+    public static final String DINKY_FLINK_TASK_LEVEL = "task_level";
 }

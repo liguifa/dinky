@@ -63,6 +63,8 @@ export default {
     'This name can be used as the JobName of the FlinkSql task (pipeline.name configuration item)',
   'catalog.note': 'Job Description',
   'catalog.note.placeholder': 'Please enter the job description',
+  'catalog.level': 'Job importance',
+  'catalog.level.tip': 'Mark the importance of the job as a reference for subsequent operations and maintenance',
   'catalog.type': 'Job Type',
   'catalog.type.placeholder': 'Please select the job type',
   'catalog.type.tip':

@@ -59,6 +59,8 @@ export default {
   'catalog.name.tip': '此名称可作为 FlinkSql 任务的 JobName',
   'catalog.note': '作业描述',
   'catalog.note.placeholder': '请输入作业描述',
+  'catalog.level': '作业重要度',
+  'catalog.level.tip': '标记作业的重要度，在后续运维时可做参考',
   'catalog.type': '作业类型',
   'catalog.type.placeholder': '请选择作业类型',
   'catalog.type.tip': '作业类型决定了作业的执行方式, 请谨慎选择, 一旦选择后不可修改',

@@ -349,6 +349,7 @@ public abstract class MetricService<T> {
                         jobInfoDetail.getInstance().getStatus());
                 metrics.put(MetricKeys.DINKY_FLINK_TASK_DEPLOY_STATUS, task.getStep());
                 metrics.put(MetricKeys.DINKY_FLINK_TASK_NAME, task.getName());
+                metrics.put(MetricKeys.DINKY_FLINK_TASK_LEVEL, task.getLevel());
             }
         }
 

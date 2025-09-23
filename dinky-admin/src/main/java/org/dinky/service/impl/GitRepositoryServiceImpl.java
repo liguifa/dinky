@@ -220,13 +220,15 @@ public class GitRepositoryServiceImpl implements GitRepositoryService {
         if (!isGitSyncEnabled(taskId)) {
             return false;
         }
-        if (!writeTaskContentToLocalRepository(taskId)) {
-            // log.warn("任务 [{}] 写入本地仓库失败，跳过提交。", taskId);
-            return false;
-        }
 
         try (Git git = getOrInitLocalRepository(taskId)) {
             String taskPath = String.format("tasks/%d", taskId);
+
+            if (!writeTaskContentToLocalRepository(taskId)) {
+                // log.warn("任务 [{}] 写入本地仓库失败，跳过提交。", taskId);
+                return false;
+            }
+
             git.add().addFilepattern(taskPath).call();
             Status status = git.status().call();
             if (status.isClean()) {
@@ -255,7 +257,7 @@ public class GitRepositoryServiceImpl implements GitRepositoryService {
         if (!isGitSyncEnabled(taskId)) {
             return false;
         }
-        
+
         try (Git git = getOrInitLocalRepository(taskId)) {
             String taskPath = String.format("tasks/%d", taskId);
 

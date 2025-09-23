@@ -183,6 +183,10 @@ export default {
   'global.savepoint.strategy.earliest': 'Earliest',
   'global.savepoint.strategy.custom': 'Custom',
 
+  'global.task.level.hight': 'P1 - high priority',
+  'global.task.level.middle': 'P2 - medium priority',
+  'global.task.level.lower': 'P3 - low priority',
+
   'global.fullScreen': 'FullScreen',
   'global.fullScreen.exit': 'Exit FullScreen',
   'global.yes': 'Yes',

@@ -151,15 +151,15 @@ export const SAVE_POINT_TYPE: DefaultOptionType[] = [
 
 export const JOB_LEVEL: DefaultOptionType[] = [
   {
-    label: 'P1 - 高优先级',
+    label: l('global.task.level.hight'),
     value: 1
   },
   {
-    label: 'P2 - 中优先级',
+    label: l('global.task.level.middle'),
     value: 2
   },
   {
-    label: 'P3 - 低优先级',
+    label: l('global.task.level.lower'),
     value: 3
   }
 ];

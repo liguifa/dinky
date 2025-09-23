@@ -179,6 +179,10 @@ export default {
   'global.savepoint.strategy.earliest': '最早一次',
   'global.savepoint.strategy.custom': '指定一次',
 
+  'global.task.level.hight': 'P1 - 高优先级',
+  'global.task.level.middle': 'P2 - 中优先级',
+  'global.task.level.lower': 'P3 - 低优先级',
+
   'global.fullScreen': '全屏',
   'global.fullScreen.exit': '退出全屏',
   'global.yes': '是',
