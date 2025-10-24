@@ -18,7 +18,7 @@
  */
 
 import { AlertRestProps, ImageRestProps, TypographyRestProps } from '@/pages/Other/About';
-import { VERSION } from '@/services/constants';
+// import { VERSION } from '@/services/constants';
 import { l } from '@/utils/intl';
 import { SmileOutlined } from '@ant-design/icons';
 import { Alert, Image, Typography } from 'antd';
@@ -29,7 +29,7 @@ export const QRCode = () => {
   return (
     <>
       <Alert
-        message={l('about.Community', '', { version: VERSION })}
+        message={l('about.Community', '', { version: "1.3.0" })}
         type='success'
         icon={<SmileOutlined />}
         {...AlertRestProps}

@@ -60,6 +60,11 @@ const FastLink = () => {
       title: l('menu.registration.resource'),
       href: '/registration/resource',
       icon: <ClusterConfigIcon style={imgStyle} />
+    },
+    {
+      title: l('menu.registration.image'),
+      href: '/registration/image',
+      icon: <ClusterConfigIcon style={imgStyle} />
     }
   ];
 

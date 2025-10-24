@@ -92,16 +92,10 @@
     </select>
 
      <select id="listJobInstancesToRecheck" resultType="org.dinky.data.model.job.JobInstance">
-        select dji.*
-        from dinky_job_instance dji
-        join (
-            select task_id, max(create_time) as max_ct
-            from dinky_job_instance
-            group by task_id
-        ) latest
-        on dji.task_id = latest.task_id and dji.create_time = latest.max_ct
-        WHERE dji.status IN ('FAILED', 'CANCELED', 'FINISHED', 'UNKNOWN')
-        order by dji.id desc;
+        select *
+        from dinky_job_instance
+        WHERE status IN ('FAILED', 'CANCELED', 'RECONNECTING', 'UNKNOWN', 'RESTARTING')
+        and id IN (select job_instance_id from dinky_task where step = 2)
     </select>
 
     <select id="getJobInstanceByTaskId" resultType="org.dinky.data.model.job.JobInstance">
@@ -118,14 +112,8 @@
     </select>
 
     <select id="listAllJobInstances" resultType="org.dinky.data.model.job.JobInstance">
-        select dji.*
-        from dinky_job_instance dji
-        join (
-            select task_id, max(id) as max_instance_id
-            from dinky_job_instance
-            group by task_id
-        ) latest
-        on dji.task_id = latest.task_id and dji.id = latest.max_instance_id
-        order by dji.task_id desc;
+        select *
+        from dinky_job_instance
+        where id in (select job_instance_id from dinky_task)
     </select>
 </mapper>

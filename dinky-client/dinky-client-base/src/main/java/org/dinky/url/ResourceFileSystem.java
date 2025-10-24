@@ -95,7 +95,11 @@ public class ResourceFileSystem extends FileSystem {
 
     @Override
     public FileStatus[] listStatus(Path f) throws IOException {
-        Path path = new Path(getBaseResourceManager().getFilePath(f.getPath()));
+        String pathStr = getBaseResourceManager().getFilePath(f.getPath());
+        if (!pathStr.startsWith("/")) {
+            pathStr = "/" + pathStr;
+        }
+        Path path = new Path(pathStr);
         if (!getBaseResourceManager().getFileSystem().exists(path)) {
             return new FileStatus[0];
         }

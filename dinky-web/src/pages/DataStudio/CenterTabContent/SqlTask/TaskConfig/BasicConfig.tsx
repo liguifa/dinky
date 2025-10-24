@@ -37,6 +37,10 @@ import { JOB_LIFE_CYCLE } from '@/pages/DevOps/constants';
 import { Alert } from 'antd';
 import { SAVE_POINT_TYPE } from '@/pages/DataStudio/constants';
 import { buildAlertGroupOptions } from '@/pages/DataStudio/CenterTabContent/SqlTask/TaskConfig/function';
+import { ImageInfo } from '@/types/RegCenter/data';
+import { queryDataByParams } from '@/services/BusinessCrud';
+import { API_CONSTANTS } from '@/services/endpoints';
+import { useAsyncEffect } from 'ahooks';
 
 export const BasicConfig = (props: {
   tempData: TempData;
@@ -48,6 +52,27 @@ export const BasicConfig = (props: {
   const { alertGroup, flinkConfigOptions, flinkUdfOptions } = props.tempData;
   const formRef = useRef<ProFormInstance>();
   const [containerWidth, setContainerWidth] = useState<number>(0);
+
+  const [images, setImages] = useState<{ url: string; desc: string }[]>([]);
+  
+  const queryImageList = async () => {
+    const queryData = (await queryDataByParams<ImageInfo[]>(API_CONSTANTS.IMAGE_LIST))!!;
+    setImages(
+      queryData.flatMap(i =>
+        i.versions.map(v => ({
+          url: `${i.name}:${v}`,
+          desc: i.note,
+        }))
+      )
+    );
+  };
+
+  useAsyncEffect(async () => {
+    await queryImageList();
+    if (images.length > 0 && props.data) {
+      formRef.current?.setFieldsValue(props.data);
+    }
+  }, []);
 
   const divRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -84,7 +109,7 @@ export const BasicConfig = (props: {
         </>
       )}
       <ProForm
-        initialValues={{ ...props.data }}
+        initialValues={{ ...props.data, image: props.data.configJson.customConfig?.find((c: { key: string; value: string }) => c.key == 'kubernetes.container.image.ref')?.value }}
         submitter={false}
         disabled={props.data?.step === JOB_LIFE_CYCLE.PUBLISH || props.isLockTask}
         onValuesChange={props.onValuesChange}
@@ -154,6 +179,29 @@ export const BasicConfig = (props: {
           placeholder={l('pages.datastudio.label.jobConfig.alertGroup.tip')}
           options={buildAlertGroupOptions(alertGroup)}
           allowClear={false}
+        />
+        <ProFormSelect
+          label={l('pages.datastudio.label.jobConfig.image')}
+          name={['image']}
+          placeholder={l('pages.datastudio.label.jobConfig.image.tip')}
+          options={images}
+          allowClear={false}
+          fieldProps={{
+            fieldNames: { label: 'url', value: 'url' },
+            optionItemRender: (option: {url: String, desc: String}) => (
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  padding: '4px 0',
+                  lineHeight: 1.4,
+                }}
+              >
+                <span style={{ fontWeight: 500, color: '#333' }}>{option.url}</span>
+                <span style={{ fontSize: 12, color: '#888' }}>{option.desc}</span>
+              </div>
+            )
+          }}
         />
         <ProFormFlinkConfig
           containerWidth={containerWidth}

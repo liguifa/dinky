@@ -273,6 +273,7 @@ export type TaskState = {
   status: string;
   mockSinkFunction: boolean;
   level: number;
+  image: string;
 };
 /**
  * @description:

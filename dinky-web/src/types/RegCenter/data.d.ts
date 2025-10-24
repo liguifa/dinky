@@ -405,3 +405,10 @@ export interface ResourceInfo {
   children: ResourceInfo[];
   leaf: boolean;
 }
+
+declare interface ImageInfo {
+  id: number,
+  name: string,
+  note: string,
+  versions: string[]
+}

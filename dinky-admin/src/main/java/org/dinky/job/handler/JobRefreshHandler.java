@@ -235,36 +235,43 @@ public class JobRefreshHandler {
      * @param jobInfoDetail The job info detail.
      */
     public static void checkAndRefreshJobId(JobInfoDetail jobInfoDetail) {
-        if (!GatewayType.get(jobInfoDetail.getClusterInstance().getType()).isKubernetesApplicationMode()) {
-            return;
-        }
+        try {
+            if (!GatewayType.get(jobInfoDetail.getClusterInstance().getType()).isKubernetesApplicationMode()) {
+                return;
+            }
 
-        List<JsonNode> jobs = FlinkAPI.build(jobInfoDetail.getClusterInstance().getJobManagerHost())
-                .listJobs();
-        if (jobs == null || jobs.isEmpty()) {
-            log.info(
-                    "No running jobs found on task: {}",
-                    jobInfoDetail.getClusterInstance().getJobManagerHost());
-            return;
-        }
+            List<JsonNode> jobs = FlinkAPI.build(
+                            jobInfoDetail.getClusterInstance().getJobManagerHost())
+                    .listJobs();
+            if (jobs == null || jobs.isEmpty()) {
+                log.info(
+                        "No running jobs found on task: {}",
+                        jobInfoDetail.getClusterInstance().getJobManagerHost());
+                return;
+            }
 
-        JsonNode firstJob = jobs.stream().findFirst().orElse(jobs.get(0));
-        String latestJobId = firstJob.get("jid").asText();
-        String currentJobId = jobInfoDetail.getInstance().getJid();
-        if (!latestJobId.equals(currentJobId)) {
-            JobInstance jobInstance = jobInfoDetail.getInstance();
-            jobInstance.setJid(latestJobId);
-            jobInstanceService.updateById(jobInstance);
-            log.info(
-                    "JobId for [{}] has been refreshed: {} -> {}",
-                    jobInfoDetail.getInstance().getName(),
-                    currentJobId,
-                    latestJobId);
-        } else {
-            log.debug(
-                    "JobId for [{}] is up to date: {}",
-                    jobInfoDetail.getInstance().getName(),
-                    currentJobId);
+            JsonNode firstJob = jobs.stream().findFirst().orElse(jobs.get(0));
+            String latestJobId = firstJob.get("jid").asText();
+            String currentJobId = jobInfoDetail.getInstance().getJid();
+            if (!latestJobId.equals(currentJobId)) {
+                JobInstance jobInstance = jobInfoDetail.getInstance();
+                jobInstance.setJid(latestJobId);
+                jobInstanceService.updateById(jobInstance);
+                log.info(
+                        "JobId for [{}] has been refreshed: {} -> {}",
+                        jobInfoDetail.getInstance().getName(),
+                        currentJobId,
+                        latestJobId);
+            } else {
+                log.debug(
+                        "JobId for [{}] is up to date: {}",
+                        jobInfoDetail.getInstance().getName(),
+                        currentJobId);
+            }
+        } catch (Exception e) {
+            log.warn(
+                    "check and refresh jobid fail, {}",
+                    jobInfoDetail.getInstance().getName());
         }
     }
 

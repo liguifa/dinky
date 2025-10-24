@@ -545,6 +545,8 @@ export default {
   'pages.datastudio.label.udf.className': 'class name',
   'pages.datastudio.label.jobConfig.alertGroup': 'Alarm Group',
   'pages.datastudio.label.jobConfig.alertGroup.tip': 'Select alert group',
+  'pages.datastudio.label.jobConfig.image': 'Image',
+  'pages.datastudio.label.jobConfig.image.tip': 'Select image',
   'pages.datastudio.label.jobConfig.batchmode': 'Batch Mode',
   'pages.datastudio.label.jobConfig.batchmode.tip': 'Use batch mode',
   'pages.datastudio.label.jobConfig.cluster': 'Flink cluster',

@@ -94,5 +94,10 @@ export const QUICK_GUIDE = [
     key: 'accountCenter',
     label: l('datastudio.middle.qg.accountCenter'),
     link: '/account/center'
+  },
+  {
+    key: 'image',
+    label: l('datastudio.middle.qg.accountCenter'),
+    link: '/registration/image'
   }
 ];

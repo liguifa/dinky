@@ -174,6 +174,10 @@ export enum API_CONSTANTS {
   UDF_TEMPLATE_ENABLE = '/api/udf/template/enable',
   UDF_TEMPLATE_TREE = '/api/udf/template/tree',
 
+  // ------------------------------------- image ------------------------------------------
+  IMAGE_LIST = '/api/image',
+  IMAGE_SAVE = '/api/image/save',
+
   // ------------------------------------ operator ------------------------------------
   OPERATOR = '/api/operator',
   OPERATOR_DELETE = '/api/operator/delete',

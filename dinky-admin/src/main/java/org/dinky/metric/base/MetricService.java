@@ -25,6 +25,7 @@ import org.dinky.data.enums.JobStatus;
 import org.dinky.data.model.Task;
 import org.dinky.data.model.ext.JobInfoDetail;
 import org.dinky.data.model.job.JobInstance;
+import org.dinky.service.ClusterConfigurationService;
 import org.dinky.service.JobInstanceService;
 import org.dinky.service.TaskService;
 
@@ -41,6 +42,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.support.PeriodicTrigger;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 
 import lombok.extern.slf4j.Slf4j;
@@ -55,9 +58,18 @@ public abstract class MetricService<T> {
     private TaskService taskService;
 
     @Autowired
+    private ClusterConfigurationService clusterConfigurationService;
+
+    @Autowired
     private ScheduleThreadPool schedule;
 
     private HashMap<MetricType, T> metricCaches = new HashMap<>();
+
+    private Cache<Integer, Task> taskCache =
+            CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
+
+    private Cache<Integer, String> clusterCache =
+            CacheBuilder.newBuilder().expireAfterWrite(12, TimeUnit.MINUTES).build();
 
     private boolean isScheduleStart = false;
 
@@ -110,10 +122,10 @@ public abstract class MetricService<T> {
         List<HashMap<String, Object>> metrics = new ArrayList<>();
         for (JobInstance jobInstance : jobInstances) {
             try {
-                JobInfoDetail jobInfoDetail = jobInstanceService.getJobInfoDetail(jobInstance.getId());
                 if (type == MetricType.STATUS) {
-                    metrics.add(this.retrieveFlinkJobStatusMetricByJobInfoDetail(jobInfoDetail));
+                    metrics.add(this.retrieveFlinkJobStatusMetricByJobInfoDetail(jobInstance));
                 } else if (jobInstance.getStatus().equals(JobStatus.RUNNING.toString())) {
+                    JobInfoDetail jobInfoDetail = jobInstanceService.getJobInfoDetail(jobInstance.getId());
                     switch (type) {
                         case JOBMANAGER:
                             metrics.addAll(this.retrieveTaskManagerMetricsByJobInfoDetail(jobInfoDetail));
@@ -133,10 +145,10 @@ public abstract class MetricService<T> {
         return this.formatFlinkJobMetrics(metrics);
     }
 
-    private HashMap<String, Object> retrieveFlinkJobStatusMetricByJobInfoDetail(JobInfoDetail jobInfoDetail) {
-        HashMap<String, Object> metric = this.retrieveJobInfoMetrics(jobInfoDetail);
+    private HashMap<String, Object> retrieveFlinkJobStatusMetricByJobInfoDetail(JobInstance jobInstance) {
+        HashMap<String, Object> metric = this.retrieveJobInfoMetrics(jobInstance);
         metric.put("name", MetricNames.DINKY_FLINK_TASK_IS_RUNNING);
-        metric.put("value", jobInfoDetail.getInstance().getStatus().equals(JobStatus.RUNNING.toString()) ? 1 : 0);
+        metric.put("value", jobInstance.getStatus().equals(JobStatus.RUNNING.toString()) ? 1 : 0);
         return metric;
     }
 
@@ -256,7 +268,7 @@ public abstract class MetricService<T> {
 
     private HashMap<String, Object> buildMetric(
             JobInfoDetail jobInfoDetail, String name, long value, HashMap<String, String> other) {
-        HashMap<String, Object> base = this.retrieveJobInfoMetrics(jobInfoDetail);
+        HashMap<String, Object> base = this.retrieveJobInfoMetrics(jobInfoDetail.getInstance());
         HashMap<String, Object> m = new HashMap<>(base);
         m.put("name", name);
         m.put("value", value);
@@ -268,7 +280,7 @@ public abstract class MetricService<T> {
 
     private HashMap<String, Object> buildMetric(
             JobInfoDetail jobInfoDetail, JsonNode metric, HashMap<String, String> other) {
-        HashMap<String, Object> base = this.retrieveJobInfoMetrics(jobInfoDetail);
+        HashMap<String, Object> base = this.retrieveJobInfoMetrics(jobInfoDetail.getInstance());
         HashMap<String, Object> m = new HashMap<>(base);
         String name =
                 "DINKY_FLINK_JOB_" + metric.get("id").asText().replace(".", "_").toUpperCase();
@@ -303,7 +315,7 @@ public abstract class MetricService<T> {
         double backpressureRateMax =
                 ratios.stream().mapToDouble(Double::doubleValue).max().orElse(1.0);
 
-        HashMap<String, Object> baseMetrics = this.retrieveJobInfoMetrics(jobInfoDetail);
+        HashMap<String, Object> baseMetrics = this.retrieveJobInfoMetrics(jobInfoDetail.getInstance());
 
         List<HashMap<String, Object>> metricList = new ArrayList<>();
         Map<String, Object> metricsMap = Map.of(
@@ -337,35 +349,39 @@ public abstract class MetricService<T> {
         }
     }
 
-    public HashMap<String, Object> retrieveJobInfoMetrics(JobInfoDetail jobInfoDetail) {
+    public HashMap<String, Object> retrieveJobInfoMetrics(JobInstance jobInstance) {
         HashMap<String, Object> metrics = new HashMap();
 
-        if (taskService != null) {
-            Task task = taskService.getById(jobInfoDetail.getInstance().getTaskId());
+        if (taskCache.getIfPresent(jobInstance.getTaskId()) == null) {
+            taskCache.put(jobInstance.getTaskId(), taskService.getById(jobInstance.getTaskId()));
+        }
 
-            if (task != null) {
-                metrics.put(
-                        MetricKeys.DINKY_FLINK_TASK_STATUS,
-                        jobInfoDetail.getInstance().getStatus());
-                metrics.put(MetricKeys.DINKY_FLINK_TASK_DEPLOY_STATUS, task.getStep());
-                metrics.put(MetricKeys.DINKY_FLINK_TASK_NAME, task.getName());
-                metrics.put(MetricKeys.DINKY_FLINK_TASK_LEVEL, task.getLevel());
+        Task task = taskCache.getIfPresent(jobInstance.getTaskId());
+
+        if (task != null) {
+            metrics.put(MetricKeys.DINKY_FLINK_TASK_STATUS, jobInstance.getStatus());
+            metrics.put(MetricKeys.DINKY_FLINK_TASK_DEPLOY_STATUS, task.getStep());
+            metrics.put(MetricKeys.DINKY_FLINK_TASK_NAME, task.getName());
+            metrics.put(MetricKeys.DINKY_FLINK_TASK_LEVEL, task.getLevel());
+
+            if (clusterCache.getIfPresent(task.getClusterConfigurationId()) == null) {
+                clusterCache.put(
+                        task.getClusterConfigurationId(),
+                        clusterConfigurationService
+                                .getClusterConfigById(task.getClusterConfigurationId())
+                                .getName());
             }
+
+            metrics.put(
+                    MetricKeys.DINKY_FLINK_CLUSTER_NAME, clusterCache.getIfPresent(task.getClusterConfigurationId()));
         }
 
         if (!metrics.containsKey(MetricKeys.DINKY_FLINK_TASK_NAME)) {
-            metrics.put(
-                    MetricKeys.DINKY_FLINK_TASK_NAME,
-                    jobInfoDetail.getInstance().getName());
+            metrics.put(MetricKeys.DINKY_FLINK_TASK_NAME, jobInstance.getName());
         }
 
-        metrics.put(MetricKeys.DINKY_FLINK_TASK_ID, jobInfoDetail.getInstance().getTaskId());
+        metrics.put(MetricKeys.DINKY_FLINK_TASK_ID, jobInstance.getTaskId());
 
-        if (jobInfoDetail.getClusterConfiguration() != null) {
-            metrics.put(
-                    MetricKeys.DINKY_FLINK_CLUSTER_NAME,
-                    jobInfoDetail.getClusterConfiguration().getName());
-        }
         return metrics;
     }
 }

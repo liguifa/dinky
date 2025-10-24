@@ -487,6 +487,8 @@ export default {
   'pages.datastudio.label.udf.className': '类名',
   'pages.datastudio.label.jobConfig.alertGroup': '告警组',
   'pages.datastudio.label.jobConfig.alertGroup.tip': '选择告警组',
+  'pages.datastudio.label.jobConfig.image': '镜像',
+  'pages.datastudio.label.jobConfig.image.tip': '选择镜像',
   'pages.datastudio.label.jobConfig.batchmode': '批模式',
   'pages.datastudio.label.jobConfig.batchmode.tip': '使用批模式',
   'pages.datastudio.label.jobConfig.cluster': 'Flink集群',

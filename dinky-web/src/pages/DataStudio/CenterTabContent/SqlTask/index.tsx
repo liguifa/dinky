@@ -416,6 +416,32 @@ export const SqlTask = memo((props: FlinkSqlProps & any) => {
       }
       allValues.type = mode;
     }
+
+    if(allValues.image) {
+      const item = allValues.configJson?.customConfig.find(
+        (c: { key: string; value: string }) => c.key === 'kubernetes.container.image.ref'
+      );
+
+      if(item) {
+        item.value = allValues.image;
+      } else {
+        if(!allValues.configJson) {
+          allValues.configJson = {
+            customConfig: [],
+            udfConfig: undefined,
+            udfRefer: null
+          };
+        }
+        if(!allValues.configJson.customConfig) {
+          allValues.configJson.customConfig = [];
+        }
+        allValues.configJson.customConfig.push({
+          key: 'kubernetes.container.image.ref',
+          value: allValues.image
+        });
+      }
+    }
+
     setCurrentState({ ...currentState, ...allValues });
     updateCenterTab({ ...props.tabData, params: { ...currentState, ...allValues } });
   };
@@ -607,11 +633,37 @@ export const SqlTask = memo((props: FlinkSqlProps & any) => {
     });
   }, [currentState, updateAction]);
 
+  const handleChangeJobLife = useCallback(async () => {
+    if (JOB_LIFE_CYCLE.PUBLISH == currentState.step) {
+      await changeTaskLife(
+        l('global.table.lifecycle.offline'),
+        currentState.taskId,
+        JOB_LIFE_CYCLE.DEVELOP
+      );
+      currentState.step = JOB_LIFE_CYCLE.DEVELOP;
+    } else {
+      await handleSave();
+      const result = await changeTaskLife(
+        l('global.table.lifecycle.publishing'),
+        currentState.taskId,
+        JOB_LIFE_CYCLE.PUBLISH
+      );
+      if (result.success) {
+        const taskDetails = await getTaskDetails(currentState.taskId);
+        if (taskDetails) {
+          setLastVersion(taskDetails.versionId);
+        }
+      }
+      currentState.step = JOB_LIFE_CYCLE.PUBLISH;
+    }
+    setCurrentState((prevState) => ({ ...prevState, step: currentState.step }));
+  }, [handleSave, currentState.step, currentState.taskId]);
+
   const handleSubmit = useCallback(async () => {
     setIsSubmitting(true);
     try {
       if (currentState.step !== JOB_LIFE_CYCLE.PUBLISH) {
-        await handleSave();
+        await handleChangeJobLife();
       }
       updateAction({
         actionType: DataStudioActionType.TASK_RUN_SUBMIT,
@@ -658,7 +710,7 @@ export const SqlTask = memo((props: FlinkSqlProps & any) => {
     } finally {
       setIsSubmitting(false);
     }
-  }, [updateAction, currentState.envId, handleSave, currentState.taskId, currentState.dialect]);
+  }, [updateAction, currentState.envId, handleChangeJobLife, currentState.taskId, currentState.dialect]);
 
   const handleDebug = useCallback(async () => {
     updateAction({
@@ -748,32 +800,6 @@ export const SqlTask = memo((props: FlinkSqlProps & any) => {
       }
     });
   }, [updateAction]);
-
-  const handleChangeJobLife = useCallback(async () => {
-    if (JOB_LIFE_CYCLE.PUBLISH == currentState.step) {
-      await changeTaskLife(
-        l('global.table.lifecycle.offline'),
-        currentState.taskId,
-        JOB_LIFE_CYCLE.DEVELOP
-      );
-      currentState.step = JOB_LIFE_CYCLE.DEVELOP;
-    } else {
-      await handleSave();
-      const result = await changeTaskLife(
-        l('global.table.lifecycle.publishing'),
-        currentState.taskId,
-        JOB_LIFE_CYCLE.PUBLISH
-      );
-      if (result.success) {
-        const taskDetails = await getTaskDetails(currentState.taskId);
-        if (taskDetails) {
-          setLastVersion(taskDetails.versionId);
-        }
-      }
-      currentState.step = JOB_LIFE_CYCLE.PUBLISH;
-    }
-    setCurrentState((prevState) => ({ ...prevState, step: currentState.step }));
-  }, [handleSave, currentState.step, currentState.taskId]);
 
   const handlePushDolphinOpen = async () => {
     const dinkyTaskId = currentState.taskId;

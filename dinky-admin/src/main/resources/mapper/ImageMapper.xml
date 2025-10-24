@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dinky.mapper.ImageMapper">
+
+    <select id="listAllImages" resultType="org.dinky.data.model.Image">
+        select *
+        from dinky_image
+        order by id desc
+    </select>
+
+    <select id="listAllTasksByImageId" resultType="String">
+        select
+        name
+        from
+        dinky_job_instance
+        where image_id = #{param.id}
+    </select>
+</mapper>

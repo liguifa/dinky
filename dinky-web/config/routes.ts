@@ -200,6 +200,12 @@ export default [
         name: 'resource',
         icon: 'FileZipOutlined',
         component: './RegCenter/Resource'
+      },
+      {
+        path: '/registration/image',
+        name: 'image',
+        icon: 'ProjectOutlined',
+        component: './RegCenter/Image'
       }
     ]
   },
@@ -281,12 +287,12 @@ export default [
         icon: 'InfoCircleOutlined',
         component: './SettingCenter/SystemLogs'
       },
-      // {
-      //   path: '/settings/process',
-      //   name: 'process',
-      //   icon: 'ReconciliationOutlined',
-      //   component: './SettingCenter/Process'
-      // },
+      {
+        path: '/settings/process',
+        name: 'process',
+        icon: 'ReconciliationOutlined',
+        component: './SettingCenter/Process'
+      },
       {
         path: '/settings/classloaderjars',
         name: 'classloaderjars',
@@ -320,13 +326,13 @@ export default [
       }
     ]
   },
-  // {
-  //   path: '/about',
-  //   name: 'about',
-  //   icon: 'SmileOutlined',
-  //   footerRender: false,
-  //   component: './Other/About'
-  // },
+  {
+    path: '/about',
+    name: 'about',
+    icon: 'SmileOutlined',
+    footerRender: false,
+    component: './Other/About'
+  },
   {
     path: '/account/center',
     footerRender: false,
